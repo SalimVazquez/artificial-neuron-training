@@ -24,6 +24,8 @@ def ReadFile():
 
 def start(entries):
     X, Y = ReadFile()
+    lamb = float(entries['Lambda'].get())
+    eps = float(entries['Error permisible'].get())
 
 def makeform(root, fields):
     title = Label(root, text="Inicialización", width=20, font=("bold",20))
