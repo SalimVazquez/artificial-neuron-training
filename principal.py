@@ -2,6 +2,7 @@ from tkinter import *
 from tkinter import messagebox
 import numpy as np
 import random
+import math
 
 # globals 
 root = Tk()
@@ -18,6 +19,12 @@ def FAEscalon(U):
         else:
             Yc.append(1)
     return np.array(Yc)
+
+def calculateError(E):
+    result = 0
+    for i in range(len(E)):
+        result = result + math.pow(E[i], 2)
+    return math.sqrt(result)
 
 def ReadFile():
     f = open('data.txt', 'r')
@@ -59,6 +66,8 @@ def start(entries):
     print('n * Et * X: ', Ne)
     W = W.transpose() - Ne
     print('W: ',W)
+    eps = calculateError(E)
+    print('ENorm:', eps)
 
 def makeform(root, fields):
     title = Label(root, text="Inicialización", width=20, font=("bold",20))
