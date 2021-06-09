@@ -11,7 +11,10 @@ fields = (
 )
 
 def start(entries):
-    print('Initializing...')
+    f = open('data.txt', 'r')
+    data = f.read()
+    print(data)
+    f.close()
 
 def makeform(root, fields):
     title = Label(root, text="Inicialización", width=20, font=("bold",20))
