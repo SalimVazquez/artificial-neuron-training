@@ -10,6 +10,15 @@ fields = (
     'Error permisible',
 )
 
+def FAEscalon(U):
+    Yc = []
+    for i in range(len(U)):
+        if U[i] <= 0:
+            Yc.append(0)
+        else:
+            Yc.append(1)
+    return np.array(Yc)
+
 def ReadFile():
     f = open('data.txt', 'r')
     data = f.read()
@@ -36,6 +45,7 @@ def start(entries):
     print('W:\n', W)
     U = X.dot(W)
     print('U:', U)
+    Yc = FAEscalon(U)
 
 def makeform(root, fields):
     title = Label(root, text="Inicialización", width=20, font=("bold",20))
