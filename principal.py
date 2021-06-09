@@ -14,11 +14,9 @@ def ReadFile():
     f = open('data.txt', 'r')
     data = f.read()
     clean = data.rsplit("\n")
-    print('X:', clean[0])
-    print('Y:', clean[1])
     X = np.matrix(clean[0]) # create matrix X
     y = clean[1].replace(";", ",")
-    Y = np.array((y)) # create array Y
+    Y = np.array([y]) # create array Y
     f.close()
     return X, Y
 
@@ -26,12 +24,14 @@ def start(entries):
     X, Y = ReadFile()
     lamb = float(entries['Lambda'].get())
     eps = float(entries['Error permisible'].get())
+    print('X:\n', X)
+    print('Y: ', Y)
+    print('Lambda: ', lamb)
+    print('Error: ', eps)
     dimensionsX = X.shape
+    print('dimensionsX: ', dimensionsX)
     m = dimensionsX[0]
     n = dimensionsX[1]
-    w = Y.shape
-    print('dimensionsX: ', dimensionsX)
-    print('dimensionsX: ', w)
 
 def makeform(root, fields):
     title = Label(root, text="Inicialización", width=20, font=("bold",20))
