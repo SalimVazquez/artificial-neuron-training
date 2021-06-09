@@ -41,12 +41,12 @@ def ReadFile():
     f.close()
     return X, Y
 
-def graphEvol(x,y):
+def graphEvol(x,y, lamb):
     plot.xlabel('Epocas')
     plot.ylabel('Norma del error')
     plot.title('Evolución de la norma del error')
     plot.plot(x, y, markerfacecolor='blue',
-             markersize=6, color='skyblue', linewidth=3, label='-Evolucion norma\nerror cuadratico')
+             markersize=6, color='skyblue', linewidth=3, label='Lambda: '+str(lamb))
     plot.legend(bbox_to_anchor=(1, 1), loc='upper left', borderaxespad=0.)
     plot.show()
 
@@ -95,7 +95,7 @@ def start(entries):
         print('Finish')
         messagebox.showinfo("Norma del error", str(enorm))
         messagebox.showinfo("Configuración W", str(W))
-        graphEvol(epochs, evolNorm)
+        graphEvol(epochs, evolNorm, lamb)
     else:
         messagebox.showerror("Parametros incorrectos", "Dimensiones no correctas")
 
