@@ -41,6 +41,8 @@ def ReadFile():
     return X, Y
 
 def start(entries):
+    generations = []
+    i = 0
     X, Y = ReadFile()
     lamb = float(entries['Lambda'].get())
     eps = float(entries['Error permisible'].get())
@@ -53,23 +55,31 @@ def start(entries):
     m = dimensionsX[0]
     n = dimensionsX[1]
     W = np.random.rand(n,1)
-    print('W:\n', W)
-    U = X.dot(W)
-    print('U:\n', U)
-    Yc = FAEscalon(U)
-    print('Yc:', Yc)
-    E = Yc - Y
-    print('E:', E)
-    EtX = np.dot(E.transpose(), X)
-    print('Et * X: ',EtX)
-    Ne = lamb * EtX
-    print('n * Et * X: ', Ne)
-    W = W.transpose() - Ne
-    print('W: ',W)
-    enorm = calculateError(E)
-    print('ENorm:', enorm)
-    if enorm > eps:
-        print('Try again!')
+    while True:
+        print('<----- Generation #', i+1, ' ----->')
+        generations.append(i)
+        print('W:\n', W)
+        U = X.dot(W)
+        print('U:\n', U)
+        Yc = FAEscalon(U)
+        print('Yc:', Yc)
+        E = Yc - Y
+        print('E:', E)
+        EtX = np.dot(E.transpose(), X)
+        print('Et * X: ',EtX)
+        Ne = lamb * EtX
+        print('n * Et * X: ', Ne)
+        W = W.transpose() - Ne
+        print('new W: ',W)
+        enorm = calculateError(E)
+        print('ENorm:', enorm)
+        if enorm > eps:
+            W = W.transpose()
+            print('Try again!')
+            i += 1
+        else:
+            break
+    print('Finish')
 
 def makeform(root, fields):
     title = Label(root, text="Inicialización", width=20, font=("bold",20))
