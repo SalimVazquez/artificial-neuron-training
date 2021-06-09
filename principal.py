@@ -44,9 +44,11 @@ def start(entries):
     W = np.random.rand(n,1)
     print('W:\n', W)
     U = X.dot(W)
-    print('U:', U)
+    print('U:\n', U)
     Yc = FAEscalon(U)
     print('Yc:', Yc)
+    E = Yc - Y
+    print('E:', E)
 
 def makeform(root, fields):
     title = Label(root, text="Inicialización", width=20, font=("bold",20))
