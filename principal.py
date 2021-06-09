@@ -9,12 +9,8 @@ fields = (
     'Lambda',
     'Error permisible',
 )
-X # Variable for matrix A
-Y # Variable for array B
 
 def ReadFile():
-    global X
-    global Y
     f = open('data.txt', 'r')
     data = f.read()
     clean = data.rsplit("\n")
@@ -24,9 +20,10 @@ def ReadFile():
     y = clean[1].replace(";", ",")
     Y = np.array((y)) # create array Y
     f.close()
+    return X, Y
 
 def start(entries):
-    ReadFile()
+    X, Y = ReadFile()
 
 def makeform(root, fields):
     title = Label(root, text="Inicialización", width=20, font=("bold",20))
