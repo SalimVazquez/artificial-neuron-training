@@ -3,6 +3,7 @@ from tkinter import messagebox
 import numpy as np
 import random
 import math
+import matplotlib.pyplot as plot
 
 # globals 
 root = Tk()
@@ -40,8 +41,18 @@ def ReadFile():
     f.close()
     return X, Y
 
+def graphEvol(x,y):
+    plot.xlabel('Epocas')
+    plot.ylabel('Norma del error')
+    plot.title('Evolución de la norma del error')
+    plot.plot(x, y, markerfacecolor='blue',
+             markersize=6, color='skyblue', linewidth=3, label='-Evolucion norma\nerror cuadratico')
+    plot.legend(bbox_to_anchor=(1, 1), loc='upper left', borderaxespad=0.)
+    plot.show()
+
 def start(entries):
-    generations = []
+    epochs = []
+    evolNorm = []
     i = 0
     X, Y = ReadFile()
     lamb = float(entries['Lambda'].get())
@@ -57,7 +68,7 @@ def start(entries):
     W = np.random.rand(n,1)
     while True:
         print('<----- Generation #', i+1, ' ----->')
-        generations.append(i)
+        epochs.append(i)
         print('W:\n', W)
         U = X.dot(W)
         print('U:\n', U)
@@ -73,6 +84,7 @@ def start(entries):
         print('new W: ',W)
         enorm = calculateError(E)
         print('ENorm:', enorm)
+        evolNorm.append(enorm)
         if enorm > eps:
             W = W.transpose()
             print('Try again!')
@@ -82,6 +94,7 @@ def start(entries):
     print('Finish')
     messagebox.showinfo("Norma del error", str(enorm))
     messagebox.showinfo("Configuración W", str(W))
+    graphEvol(epochs, evolNorm)
 
 def makeform(root, fields):
     title = Label(root, text="Inicialización", width=20, font=("bold",20))
