@@ -46,6 +46,7 @@ def start(entries):
     U = X.dot(W)
     print('U:', U)
     Yc = FAEscalon(U)
+    print('Yc:', Yc)
 
 def makeform(root, fields):
     title = Label(root, text="Inicialización", width=20, font=("bold",20))
