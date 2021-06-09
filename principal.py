@@ -32,6 +32,10 @@ def start(entries):
     print('dimensionsX: ', dimensionsX)
     m = dimensionsX[0]
     n = dimensionsX[1]
+    W = np.random.rand(n,1)
+    print('W:\n', W)
+    U = X.dot(W)
+    print('U:', U)
 
 def makeform(root, fields):
     title = Label(root, text="Inicialización", width=20, font=("bold",20))
