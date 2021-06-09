@@ -67,7 +67,7 @@ def start(entries):
     n = dimensionsX[1]
     W = np.random.rand(n,1)
     while True:
-        print('<----- Generation #', i+1, ' ----->')
+        print('<----- Epoca #', i+1, ' ----->')
         epochs.append(i)
         print('W:\n', W)
         U = X.dot(W)
