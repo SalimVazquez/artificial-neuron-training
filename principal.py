@@ -53,8 +53,10 @@ def start(entries):
     print('Yc:', Yc)
     E = Yc - Y
     print('E:', E)
-    aux = np.dot(E.transpose(), X)
-    print('Et * X: ',aux)
+    EtX = np.dot(E.transpose(), X)
+    print('Et * X: ',EtX)
+    Ne = lamb * EtX
+    print('n * Et * X: ', Ne)
 
 def makeform(root, fields):
     title = Label(root, text="Inicialización", width=20, font=("bold",20))
