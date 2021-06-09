@@ -25,7 +25,11 @@ def ReadFile():
     clean = data.rsplit("\n")
     X = np.matrix(clean[0]) # create matrix X
     y = clean[1].replace(";", ",")
-    Y = np.array([y]) # create array Y
+    b = []
+    for i in range(0, len(y), 2):
+        b.append(y[i])
+    Yaux = [int(e) for e in b]
+    Y = np.array(Yaux) # create array Y
     f.close()
     return X, Y
 
