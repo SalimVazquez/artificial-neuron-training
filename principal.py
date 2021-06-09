@@ -80,6 +80,8 @@ def start(entries):
         else:
             break
     print('Finish')
+    messagebox.showinfo("Norma del error", str(enorm))
+    messagebox.showinfo("Configuración W", str(W))
 
 def makeform(root, fields):
     title = Label(root, text="Inicialización", width=20, font=("bold",20))
