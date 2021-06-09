@@ -66,8 +66,10 @@ def start(entries):
     print('n * Et * X: ', Ne)
     W = W.transpose() - Ne
     print('W: ',W)
-    eps = calculateError(E)
-    print('ENorm:', eps)
+    enorm = calculateError(E)
+    print('ENorm:', enorm)
+    if enorm > eps:
+        print('Try again!')
 
 def makeform(root, fields):
     title = Label(root, text="Inicialización", width=20, font=("bold",20))
