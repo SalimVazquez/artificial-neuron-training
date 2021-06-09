@@ -57,6 +57,8 @@ def start(entries):
     print('Et * X: ',EtX)
     Ne = lamb * EtX
     print('n * Et * X: ', Ne)
+    W = W.transpose() - Ne
+    print('W: ',W)
 
 def makeform(root, fields):
     title = Label(root, text="Inicialización", width=20, font=("bold",20))
