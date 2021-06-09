@@ -65,36 +65,39 @@ def start(entries):
     print('dimensionsX: ', dimensionsX)
     m = dimensionsX[0]
     n = dimensionsX[1]
-    W = np.random.rand(n,1)
-    while True:
-        print('<----- Epoca #', i+1, ' ----->')
-        epochs.append(i)
-        print('W:\n', W)
-        U = X.dot(W)
-        print('U:\n', U)
-        Yc = FAEscalon(U)
-        print('Yc:', Yc)
-        E = Yc - Y
-        print('E:', E)
-        EtX = np.dot(E.transpose(), X)
-        print('Et * X: ',EtX)
-        Ne = lamb * EtX
-        print('n * Et * X: ', Ne)
-        W = W.transpose() - Ne
-        print('new W: ',W)
-        enorm = calculateError(E)
-        print('ENorm:', enorm)
-        evolNorm.append(enorm)
-        if enorm > eps:
-            W = W.transpose()
-            print('Try again!')
-            i += 1
-        else:
-            break
-    print('Finish')
-    messagebox.showinfo("Norma del error", str(enorm))
-    messagebox.showinfo("Configuración W", str(W))
-    graphEvol(epochs, evolNorm)
+    if n > 1:
+        W = np.random.rand(n,1)
+        while True:
+            print('<----- Epoca #', i+1, ' ----->')
+            epochs.append(i)
+            print('W:\n', W)
+            U = X.dot(W)
+            print('U:\n', U)
+            Yc = FAEscalon(U)
+            print('Yc:', Yc)
+            E = Yc - Y
+            print('E:', E)
+            EtX = np.dot(E.transpose(), X)
+            print('Et * X: ',EtX)
+            Ne = lamb * EtX
+            print('n * Et * X: ', Ne)
+            W = W.transpose() - Ne
+            print('new W: ',W)
+            enorm = calculateError(E)
+            print('ENorm:', enorm)
+            evolNorm.append(enorm)
+            if enorm > eps:
+                W = W.transpose()
+                print('Try again!')
+                i += 1
+            else:
+                break
+        print('Finish')
+        messagebox.showinfo("Norma del error", str(enorm))
+        messagebox.showinfo("Configuración W", str(W))
+        graphEvol(epochs, evolNorm)
+    else:
+        messagebox.showerror("Parametros incorrectos", "Dimensiones no correctas")
 
 def makeform(root, fields):
     title = Label(root, text="Inicialización", width=20, font=("bold",20))
