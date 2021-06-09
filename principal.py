@@ -26,6 +26,12 @@ def start(entries):
     X, Y = ReadFile()
     lamb = float(entries['Lambda'].get())
     eps = float(entries['Error permisible'].get())
+    dimensionsX = X.shape
+    m = dimensionsX[0]
+    n = dimensionsX[1]
+    w = Y.shape
+    print('dimensionsX: ', dimensionsX)
+    print('dimensionsX: ', w)
 
 def makeform(root, fields):
     title = Label(root, text="Inicialización", width=20, font=("bold",20))
