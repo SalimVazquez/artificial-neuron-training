@@ -148,7 +148,7 @@ def start(entries):
                     break
             print('Finish')
             evaluations[k]['W'] = W
-            i = 1
+            i = 0
         printList(evaluations)
         graphEvol(evaluations)
     else:
