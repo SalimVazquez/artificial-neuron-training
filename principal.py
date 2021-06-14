@@ -8,7 +8,6 @@ import matplotlib.pyplot as plot
 # globals 
 root = Tk()
 fields = (
-    'Lambda',
     'Error permisible',
 )
 
@@ -41,36 +40,88 @@ def ReadFile():
     f.close()
     return X, Y
 
-def graphEvol(x,y, lamb):
+def graphEvol(list):
+    epochs1 = []
+    epochs2 = []
+    epochs3 = []
+    eNorm1 = []
+    eNorm2 = []
+    eNorm3 = []
+    w1 = 0
+    w2 = 0
+    w3 = 0
+    lamb1 = 0
+    lamb2 = 0
+    lamb3 = 0
+    weights = []
+    for i in range(len(list)):
+        if list[i]['LambdaID'] == 1:
+            epochs1.append(list[i]['Epoch'])
+            eNorm1.append(list[i]['Enorm'])
+            lamb1 = list[i]['Lambda']
+            if np.any(list[i]['W']):
+                w1 = list[i]['W']
+        elif list[i]['LambdaID'] == 2:
+            epochs2.append(list[i]['Epoch'])
+            eNorm2.append(list[i]['Enorm'])
+            lamb2 = list[i]['Lambda']
+            if np.any(list[i]['W']):
+                w2 = list[i]['W']
+        else:
+            epochs3.append(list[i]['Epoch'])
+            eNorm3.append(list[i]['Enorm'])
+            lamb3 = list[i]['Lambda']
+            if np.any(list[i]['W']):
+                w3 = list[i]['W']
+    labels = ('Lambda', 'Pesos')
+    data1 = [[lamb1, w1]]
+    data2 = [[lamb2, w2]]
+    data3 = [[lamb3, w3]]
+    weights.append(data1)
+    weights.append(data2)
+    weights.append(data3)
     plot.xlabel('Epocas')
     plot.ylabel('Norma del error')
-    plot.title('Evolución de la norma del error')
-    plot.plot(x, y, markerfacecolor='blue',
-             markersize=6, color='skyblue', linewidth=3, label='Lambda: '+str(lamb))
+    plot.title('Evolución del error')
+    plot.plot(epochs1, eNorm1, markerfacecolor='blue',
+             markersize=6, color='skyblue', linewidth=3, label='Lambda: '+str(lamb1))
+    plot.plot(epochs2, eNorm2, markerfacecolor='red',
+             markersize=6, color='red', linewidth=3, label='Lambda: '+str(lamb2))
+    plot.plot(epochs3, eNorm3, markerfacecolor='green',
+             markersize=6, color='green', linewidth=3, label='Lambda: '+str(lamb3))
+    table = plot.table(cellText=weights, colLabels=labels, loc='bottom')
+    table.set_fontsize(35)
+    plot.subplots_adjust(left=0.2, bottom=0.2)
     plot.legend(bbox_to_anchor=(1, 1), loc='upper left', borderaxespad=0.)
     plot.show()
+
+def printList(list):
+    for i in range(len(list)):
+        print(list[i])
 
 def start(entries):
     epochs = []
     evolNorm = []
+    evaluations = []
     i = 0
     X, Y = ReadFile()
-    lamb = float(entries['Lambda'].get())
     eps = float(entries['Error permisible'].get())
-    if lamb > 0 and lamb <= 1:
-        print('X:\n', X)
-        print('Y: ', Y)
-        print('Lambda: ', lamb)
-        print('Error: ', eps)
-        dimensionsX = X.shape
-        print('dimensionsX: ', dimensionsX)
-        m = dimensionsX[0]
-        n = dimensionsX[1]
-        if n > 1 or m >= 2:
-            W = np.random.rand(n,1)
+    print('X:\n', X)
+    print('Y: ', Y)
+    print('Error: ', eps)
+    dimensionsX = X.shape
+    print('dimensionsX: ', dimensionsX)
+    m = dimensionsX[0]
+    n = dimensionsX[1]
+    if n > 1 or m >= 2:
+        W = np.random.rand(n,1)
+        auxW = W
+        k = 0
+        for j in range(3):
+            W = auxW
+            lamb = random.uniform(0,1)
             while True:
-                print('<----- Epoca #', i+1, ' ----->')
-                epochs.append(i)
+                print('<----- Epoca #', i+1, ' || Lambda: ', lamb, ' ----->')
                 print('W:\n', W)
                 U = X.dot(W)
                 print('U:\n', U)
@@ -86,21 +137,22 @@ def start(entries):
                 print('new W: ',W)
                 enorm = calculateError(E)
                 print('ENorm:', enorm)
-                evolNorm.append(enorm)
+                dictData = {'LambdaID': j+1, 'Epoch': i+1, 'Enorm': enorm, 'Lambda': lamb, 'W': 0}
+                evaluations.append(dictData)
                 if enorm > eps:
                     W = W.transpose()
                     print('Try again!')
                     i += 1
                 else:
+                    k = i + k
                     break
             print('Finish')
-            messagebox.showinfo("Norma del error", str(enorm))
-            messagebox.showinfo("Configuración W", str(W))
-            graphEvol(epochs, evolNorm, lamb)
-        else:
-            messagebox.showerror("Parametros incorrectos", "Dimensiones no correctas")
+            evaluations[k]['W'] = W
+            i = 1
+        printList(evaluations)
+        graphEvol(evaluations)
     else:
-        messagebox.showerror("Parametros incorrectos", "Lambda fuera de parametros (0, 1]")
+        messagebox.showerror("Parametros incorrectos", "Dimensiones no correctas")
 
 def makeform(root, fields):
     title = Label(root, text="Inicialización", width=20, font=("bold",20))
