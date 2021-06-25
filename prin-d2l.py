@@ -42,6 +42,13 @@ def ReadFile():
 	Y = np.array(b)
 	return X, Y
 
+def calculateError(E):
+    result = 0
+    # sqrt(x0² + ... + xn²)
+    for i in range(len(E)):
+        result = result + math.pow(E[i], 2)
+    return math.sqrt(result)
+
 def FAEscalon(U):
     Yc = []
     for i in range(len(U)):
@@ -74,6 +81,14 @@ def start(p):
 			print('U->\n',U)
 			Yc = FAEscalon(U)
 			print('Yc->\n',Yc)
+			E = Yc - Y
+			print('E:', E)
+			LEtX = (np.dot(E.T, X) * lamb)
+			print('Lamb * E.T * X:', LEtX)
+			W = W.T - LEtX
+			print('New W->\n',W)
+			enorm = calculateError(E)
+			print(enorm,' < ',eps,'?')
 		else:
 			print('Dimensiones incorrectas')
 	else:
