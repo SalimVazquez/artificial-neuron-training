@@ -62,6 +62,9 @@ def start(entries):
         print('Y: ', Y)
         print('Lambda: ', lamb)
         print('Error: ', eps)
+        # adding bias
+        bias = [1 for i in range(dimensionsX[0])]
+        X = np.insert(X, 0, bias, axis=1)
         dimensionsX = X.shape
         print('dimensionsX: ', dimensionsX)
         m = dimensionsX[0]
