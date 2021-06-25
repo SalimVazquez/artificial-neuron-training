@@ -59,6 +59,9 @@ def FAEscalon(U):
     return np.array(Yc)
 
 def start(p):
+	epochs = []
+	evolNorm = []
+	i = 0
 	X, Y = ReadFile()
 	lamb = float(p['Lambda'].get())
 	eps = float(p['Error permisible'].get())
@@ -77,6 +80,8 @@ def start(p):
 		if n > 1 or m >= 2:
 			W = np.random.rand(n,1)
 			while True:
+				print('<----- Epoch #', i+1, ' ----->')
+				epochs.append(i)
 				print('W->\n',W)
 				U = np.dot(X, W)
 				print('U->\n',U)
@@ -90,9 +95,11 @@ def start(p):
 				print('New W->\n',W)
 				enorm = calculateError(E)
 				print(enorm,' < ',eps,'?')
+				evolNorm.append(enorm)
 				if enorm > eps:
 					W = W.T
 					print('Try again!')
+					i += 1
 				else:
 					break
 			print('Finish\nweights:',W)
