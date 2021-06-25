@@ -44,13 +44,29 @@ def ReadFile():
 
 def start(p):
 	X, Y = ReadFile()
-	lamb = float(entries['Lambda'].get())
-    eps = float(entries['Error permisible'].get())
-    if lamb > 0 and lamb <= 1:
+	lamb = float(p['Lambda'].get())
+	eps = float(p['Error permisible'].get())
+	if lamb > 0 and lamb <= 1:
 		print('matriz X->\n',X,'\nDimention:',X.shape)
 		print('array Y->',Y,'\nDimention:',Y.shape)
 		print('Lambda: ', lamb)
 		print('Error perm: ', eps)
+		# adding bias
+		auxDimention = X.shape
+		bias = [float(1) for i in range(auxDimention[0])]
+		bias = np.array(bias)
+		X = np.insert(X, 0, bias, axis=1)
+		print('matriz X->\n',X,'\nNew dimention X:',X.shape)
+		m, n = X.shape[0], X.shape[1]
+		if n > 1 or m >= 2:
+			W = np.random.rand(n,1)
+			print('W->\n',W)
+			U = X.dot(W)
+			print('U->\n',U)
+		else:
+			print('Dimensiones incorrectas')
+	else:
+		print('Parametro incorrecto en lambda')
 
 def makeform(root, fields):
     title = Label(root, text="Inicialización", width=20, font=("bold",20))
