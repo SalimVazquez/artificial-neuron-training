@@ -42,13 +42,24 @@ def ReadFile():
 	Y = np.array(b)
 	return X, Y
 
-def graphEvol(x, y, lamb):
+def graphEvol(x, y, lamb, w):
+	fig, axs = plot.subplots(2,1)
+	labelCol = ("Weights")
+	axs[0].axis('tight')
+	axs[0].axis('off')
+	columns = ["W {:X}".format(i+1) for i in range(len(w[0]))]
+	rows = ["Weights" for i in range(1)]
+	data = [["{:02}".format(w[r][c]) for c in range(len(w[0]))] for r in range(1)]
+	table = axs[0].table(cellText=data, rowLabels=rows, colLabels=columns, cellLoc='center', 
+		loc='center')
+	table.set_fontsize(16)
+	table.scale(1.2, 1.1) 
 	plot.xlabel('Epochs')
 	plot.ylabel('|E|')
-	plot.title('Evolution of the error norm')
-	plot.plot(x,y, markerfacecolor='blue',
+	axs[1].set_title('Evolution of the error norm')
+	axs[1].plot(x,y, markerfacecolor='blue',
 		markersize=6, color='skyblue', linewidth=3, label='Lambda: '+str(lamb))
-	plot.legend(bbox_to_anchor=(1, 1), loc='upper left', borderaxespad=0.)
+	plot.legend(bbox_to_anchor=(1, 1), loc='upper center', borderaxespad=0.)
 	plot.show()
 
 def calculateError(E):
@@ -112,7 +123,7 @@ def start(p):
 				else:
 					break
 			print('Finish\nweights:',W)
-			graphEvol(epochs, evolNorm, lamb)
+			graphEvol(epochs, evolNorm, lamb, W)
 		else:
 			messagebox.showerror("Parametros incorrectos", "Dimensiones no correctas")
 	else:
