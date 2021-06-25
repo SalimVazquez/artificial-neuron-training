@@ -1,9 +1,18 @@
+from tkinter import *
+from tkinter import messagebox
 import matplotlib.pyplot as plot
 from mxnet import autograd, np, npx
 from d2l import mxnet as d2l
 import pandas as pd
+import math
 
+# globals 
 npx.set_np()
+root = Tk()
+fields = (
+    'Lambda',
+    'Error permisible',
+)
 
 def divideArray(l, n):
 	for i in range(0, len(l), n): 
