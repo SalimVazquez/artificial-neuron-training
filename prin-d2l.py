@@ -104,9 +104,9 @@ def start(p):
 					break
 			print('Finish\nweights:',W)
 		else:
-			print('Dimensiones incorrectas')
+			messagebox.showerror("Parametros incorrectos", "Dimensiones no correctas")
 	else:
-		print('Parametro incorrecto en lambda')
+		messagebox.showerror("Parametros incorrectos", "Lambda fuera de parametros (0, 1]")
 
 def makeform(root, fields):
     title = Label(root, text="Inicialización", width=20, font=("bold",20))
