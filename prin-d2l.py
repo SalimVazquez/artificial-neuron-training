@@ -89,6 +89,11 @@ def start(p):
 			print('New W->\n',W)
 			enorm = calculateError(E)
 			print(enorm,' < ',eps,'?')
+			if enorm > eps:
+				# W = W.T
+				print('Try again!')
+			else:
+				print('Finish\nweights:',W)
 		else:
 			print('Dimensiones incorrectas')
 	else:
