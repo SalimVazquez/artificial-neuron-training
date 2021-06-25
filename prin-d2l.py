@@ -76,24 +76,26 @@ def start(p):
 		m, n = X.shape[0], X.shape[1]
 		if n > 1 or m >= 2:
 			W = np.random.rand(n,1)
-			print('W->\n',W)
-			U = np.dot(X, W)
-			print('U->\n',U)
-			Yc = FAEscalon(U)
-			print('Yc->\n',Yc)
-			E = Yc - Y
-			print('E:', E)
-			LEtX = (np.dot(E.T, X) * lamb)
-			print('Lamb * E.T * X:', LEtX)
-			W = W.T - LEtX
-			print('New W->\n',W)
-			enorm = calculateError(E)
-			print(enorm,' < ',eps,'?')
-			if enorm > eps:
-				# W = W.T
-				print('Try again!')
-			else:
-				print('Finish\nweights:',W)
+			while True:
+				print('W->\n',W)
+				U = np.dot(X, W)
+				print('U->\n',U)
+				Yc = FAEscalon(U)
+				print('Yc->\n',Yc)
+				E = Yc - Y
+				print('E:', E)
+				LEtX = (np.dot(E.T, X) * lamb)
+				print('Lamb * E.T * X:', LEtX)
+				W = W.T - LEtX
+				print('New W->\n',W)
+				enorm = calculateError(E)
+				print(enorm,' < ',eps,'?')
+				if enorm > eps:
+					W = W.T
+					print('Try again!')
+				else:
+					break
+			print('Finish\nweights:',W)
 		else:
 			print('Dimensiones incorrectas')
 	else:
