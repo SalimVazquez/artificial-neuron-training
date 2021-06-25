@@ -61,7 +61,7 @@ def start(p):
 		if n > 1 or m >= 2:
 			W = np.random.rand(n,1)
 			print('W->\n',W)
-			U = X.dot(W)
+			U = np.dot(X, W)
 			print('U->\n',U)
 		else:
 			print('Dimensiones incorrectas')
