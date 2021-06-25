@@ -44,8 +44,13 @@ def ReadFile():
 
 def start(p):
 	X, Y = ReadFile()
-	print('matriz X->\n',X,'\nDimention:',X.shape)
-	print('array Y->',Y,'\nDimention:',Y.shape)
+	lamb = float(entries['Lambda'].get())
+    eps = float(entries['Error permisible'].get())
+    if lamb > 0 and lamb <= 1:
+		print('matriz X->\n',X,'\nDimention:',X.shape)
+		print('array Y->',Y,'\nDimention:',Y.shape)
+		print('Lambda: ', lamb)
+		print('Error perm: ', eps)
 
 def makeform(root, fields):
     title = Label(root, text="Inicialización", width=20, font=("bold",20))
