@@ -42,6 +42,15 @@ def ReadFile():
 	Y = np.array(b)
 	return X, Y
 
+def FAEscalon(U):
+    Yc = []
+    for i in range(len(U)):
+        if U[i] <= 0:
+            Yc.append(0)
+        else:
+            Yc.append(1)
+    return np.array(Yc)
+
 def start(p):
 	X, Y = ReadFile()
 	lamb = float(p['Lambda'].get())
@@ -63,6 +72,8 @@ def start(p):
 			print('W->\n',W)
 			U = np.dot(X, W)
 			print('U->\n',U)
+			Yc = FAEscalon(U)
+			print('Yc->\n',Yc)
 		else:
 			print('Dimensiones incorrectas')
 	else:
