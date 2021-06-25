@@ -42,6 +42,15 @@ def ReadFile():
 	Y = np.array(b)
 	return X, Y
 
+def graphEvol(x, y, lamb):
+	plot.xlabel('Epochs')
+	plot.ylabel('|E|')
+	plot.title('Evolution of the error norm')
+	plot.plot(x,y, markerfacecolor='blue',
+		markersize=6, color='skyblue', linewidth=3, label='Lambda: '+str(lamb))
+	plot.legend(bbox_to_anchor=(1, 1), loc='upper left', borderaxespad=0.)
+	plot.show()
+
 def calculateError(E):
     result = 0
     # sqrt(x0² + ... + xn²)
@@ -103,6 +112,7 @@ def start(p):
 				else:
 					break
 			print('Finish\nweights:',W)
+			graphEvol(epochs, evolNorm, lamb)
 		else:
 			messagebox.showerror("Parametros incorrectos", "Dimensiones no correctas")
 	else:
