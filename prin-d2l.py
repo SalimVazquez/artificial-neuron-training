@@ -56,7 +56,15 @@ def start(p):
 		bias = [float(1) for i in range(auxDimention[0])]
 		bias = np.array(bias)
 		X = np.insert(X, 0, bias, axis=1)
-		print('New dimention X:', X.shape)
+		print('matriz X->\n',X,'\nNew dimention X:',X.shape)
+		m, n = X.shape[0], X.shape[1]
+		if n > 1 or m >= 2:
+			W = np.random.rand(n,1)
+			print('W->\n',W)
+			U = X.dot(W)
+			print('U->\n',U)
+		else:
+			print('Dimensiones incorrectas')
 	else:
 		print('Parametro incorrecto en lambda')
 
