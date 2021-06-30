@@ -21,7 +21,7 @@ fields = (
     'Lambda',
     'Error permisible',
 )
-batch_size, lr, num_epochs = 4, 0.01, 50
+batch_size, num_epochs = 4, 50
 loss = gluon.loss.L2Loss()
 
 def graphEvol(x, y, lamb, w):
@@ -81,12 +81,12 @@ def start(p):
     evolNorm = []
     i = 0
     X, Y = ReadFile()
-    lamb = float(p['Lambda'].get())
+    lr = float(p['Lambda'].get())
     eps = float(p['Error permisible'].get())
-    if lamb > 0 and lamb <= 1:
+    if lr > 0 and lr <= 1:
         print('matriz X->\n',X,'\nDimention:',X.shape)
         print('array Y->',Y,'\nDimention:',Y.shape)
-        print('Lambda: ', lamb)
+        print('Lambda: ', lr)
         print('Error perm: ', eps)
         m, n = X.shape[0], X.shape[1]
         if n > 1 or m >= 2:
@@ -102,7 +102,7 @@ def start(p):
         		l = loss(net(X), Y)
         		print(f'epoch {epoch+1}, loss {l.mean().asnumpy():f}')
         		print(f'weights {net[0].weight.data()}')
-            # graphEvol(epochs, evolNorm, lamb, W)
+            # graphEvol(epochs, evolNorm, lr, W)
         else:
             messagebox.showerror("Parametros incorrectos", "Dimensiones no correctas")
     else:
