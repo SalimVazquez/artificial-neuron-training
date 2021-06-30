@@ -62,11 +62,13 @@ def start(entries):
         print('Y: ', Y)
         print('Lambda: ', lamb)
         print('Error: ', eps)
+        dimensionsX = X.shape
+        print('dimensionsX: ', dimensionsX)
         # adding bias
         bias = [1 for i in range(dimensionsX[0])]
         X = np.insert(X, 0, bias, axis=1)
         dimensionsX = X.shape
-        print('dimensionsX: ', dimensionsX)
+        print('bias added\ndimensionsX: ', dimensionsX)
         m = dimensionsX[0]
         n = dimensionsX[1]
         if n > 1 or m >= 2:
