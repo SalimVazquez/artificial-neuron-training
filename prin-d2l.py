@@ -4,16 +4,18 @@ from tkinter import messagebox
 import matplotlib.pyplot as plot
 # Library of D2L
 from d2l import mxnet as d2l
-from mxnet import autograd, np, npx, gluon, init
+from mxnet import autograd, np, npx, gluon, init, nd
 from mxnet.gluon import nn
 import pandas as pd
+from FAEscalon import FAEscalon
 
 # globals 
 npx.set_np()
 # Architecture of networks
 # with one output and FA "relu" 
 net = nn.Sequential()
-net.add(nn.Dense(1, activation="relu"))
+# net.add(nn.Dense(1, activation="relu"))
+net.add(nn.Dense(1), FAEscalon())
 # normal distribution in weights (sigma)
 net.initialize(init.Normal(sigma=0.03))
 root = Tk()
@@ -21,7 +23,6 @@ fields = (
     'Lambda',
     'Error permisible',
 )
-batch_size, num_epochs = 4, 50
 loss = gluon.loss.L2Loss()
 
 def graphEvol(x, y, lamb, w):
@@ -78,11 +79,12 @@ def ReadFile():
 
 def start(p):
     epochs = []
-    evolNorm = []
+    evol_norm = []
     i = 0
     X, Y = ReadFile()
     lr = float(p['Lambda'].get())
     eps = float(p['Error permisible'].get())
+    num_epochs = 50
     if lr > 0 and lr <= 1:
         print('matriz X->\n',X,'\nDimention:',X.shape)
         print('array Y->',Y,'\nDimention:',Y.shape)
@@ -90,7 +92,7 @@ def start(p):
         print('Error perm: ', eps)
         m, n = X.shape[0], X.shape[1]
         if n > 1 or m >= 2:
-        	data_iter = load_array((X, Y), batch_size)
+        	data_iter = load_array((X, Y), m)
         	trainer = gluon.Trainer(net.collect_params(), 'sgd', {'learning_rate': lr})
         	for epoch in range(num_epochs):
         		print('<---Epoch #',epoch+1,'--->')
@@ -98,11 +100,11 @@ def start(p):
         			with autograd.record():
         				l = loss(net(x), y)
         			l.backward()
-        			trainer.step(batch_size)
+        			trainer.step(m)
         		l = loss(net(X), Y)
         		print(f'epoch {epoch+1}, loss {l.mean().asnumpy():f}')
         		print(f'weights {net[0].weight.data()}')
-            # graphEvol(epochs, evolNorm, lr, W)
+            # graphEvol(epochs, evol_norm, lr, W)
         else:
             messagebox.showerror("Parametros incorrectos", "Dimensiones no correctas")
     else:
