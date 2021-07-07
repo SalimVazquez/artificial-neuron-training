@@ -7,10 +7,10 @@ El sistema debe de recibir una matriz<sup>m x n</sup> y un vector <sup>m x 1</su
 ';' representa un salto de linea, o otra fila
 
 ### ParametrizaciÃ³n
-- Tasa de aprendizaje
+- Tasa de aprendizaje (lambda)
 - Error permisible
 - Entradas (X, Y)
-- Bias
 
-### FunciÃ³n de activaciÃ³n
+### FunciÃ³n de activaciÃ
 - Escalon
+Se implemento una clase custom para la funciÃn de activaciÃn escalon, integrandola en D2L
