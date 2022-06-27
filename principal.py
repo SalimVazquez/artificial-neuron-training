@@ -1,187 +1,134 @@
-from tkinter import *
-from tkinter import messagebox
-import numpy as np
-import random
-import math
-import matplotlib.pyplot as plot
+from tkinter import LEFT, YES, Button, Tk
+from numpy import random, dot
+from Graficos import Graficos
+from Utils import Utils
 
-# globals 
-root = Tk()
-fields = (
-    'Error permisible',
-)
+def obtener_datos_para_tabla(list):
+    # Preparamos en una lista los registros por lambdas
+    contenedor_iteraciones = [ list[0]['iteraciones'], list[1]['iteraciones'], list[2]['iteraciones'] ]
+    contenedor_norma_error = [ list[0]['Norma error'], list[1]['Norma error'], list[2]['Norma error'] ]
+    # Normalizamos los datos
+    max_iteracion = Utils.obtener_maxima_iteracion(contenedor_iteraciones)
+    norma_error_formateada = Utils.formato_a_2_decimales(contenedor_norma_error)
+    norma_error_normalizada = Utils.normalizar_norma_de_error(max_iteracion, contenedor_iteraciones, norma_error_formateada)
+    # Preparamos los datos para la tabla
+    colls_labels_iteracion = [ x for x in range(max_iteracion) ]
+    cell_values_by_norma_error = []
+    cell_values_by_norma_error.append(norma_error_normalizada[0])
+    cell_values_by_norma_error.append(norma_error_normalizada[1])
+    cell_values_by_norma_error.append(norma_error_normalizada[2])
+    row_labels = [
+        list[0]['Lambda'], list[1]['Lambda'], list[2]['Lambda'] ]
+    return cell_values_by_norma_error, row_labels, colls_labels_iteracion
 
-def FAEscalon(U):
-    Yc = []
-    for i in range(len(U)):
-        if U[i] <= 0:
-            Yc.append(0)
+def preparar_datos(evaluaciones):
+    # Datos para obtener informacion para la tabla
+    data = []
+    data.append(Utils.dividir_por_lambdas([1], evaluaciones))
+    data.append(Utils.dividir_por_lambdas([2], evaluaciones))
+    data.append(Utils.dividir_por_lambdas([3], evaluaciones))
+    table_data = obtener_datos_para_tabla(data)
+    # Datos para obtener informacion para la grafica
+    chart_data = []
+    chart_data.append(Utils.dividir_por_lambdas([1], evaluaciones))
+    chart_data.append(Utils.dividir_por_lambdas([2], evaluaciones))
+    chart_data.append(Utils.dividir_por_lambdas([3], evaluaciones))
+    pesos_tmp = Utils.obtener_pesos(evaluaciones)
+    pesos = Utils.conversion_de_pesos(pesos_tmp)
+    return chart_data, table_data, pesos
+
+def entrenar(X, Y, pesos, id_lambda, lambd, error_ps, evaluaciones):
+    """Funcion encargada de realizar el entrenamiento a las entradas
+
+    Args:
+        X (numpy.matrix): Entradas de X
+        Y (numpy.array): Entradas de Y
+        pesos (numpy.array): pesos
+        id_lambda (int): Lambda's id
+        lambd (float): Tasa de aprendizaje
+        error_ps (float): Error permisible
+        evaluaciones (list): Lista para almacenar la evolucion del error
+
+    Returns:
+        evaluaciones (list): Registro de la evolucion del error
+    """
+    print('===== BUCLE DE ENTRENAMIENTO =====')
+    contador_iteraciones = 0
+    while True:
+        print(f"===== Iteracion {contador_iteraciones+1}, Lambda: {lambd} =====")
+        # Calculo de uk: producto matricial entre X y los pesos
+        U = X.dot(pesos)
+        print(f"U {U.shape}:\n {U}")
+        # Calculo de yc: Uso de la funcion de activacion
+        Y_calculada = Utils.funcion_activacion_escalon(U)
+        print(f"Y_calculada {Y_calculada.shape}: {Y_calculada}")
+        # Calculo del error ek: Resta vectorial entre Y deseada e Y calculada
+        error = Y_calculada - Y
+        print(f"Error: {error}")
+        # Actualizacion de pesos: (Wk + (n*(E^t*X)))
+        nuevos_pesos = pesos.transpose() - (lambd * dot(error.transpose(), X))
+        print(f"nuevos pesos: {nuevos_pesos}")
+        # Obtenemos la norma de error
+        norma_error = Utils.calcular_error(error)
+        print(f"norma_error: {norma_error}")
+        if norma_error > error_ps:
+            diccionario_data = {
+                'LambdaID': id_lambda+1,
+                'Lambda': lambd,
+                'Iteraciones': contador_iteraciones+1,
+                'Norma': norma_error,
+                'Pesos': 0
+            }
+            evaluaciones.append(diccionario_data)
+            pesos = nuevos_pesos.transpose()
+            print('Error muy alto!')
+            contador_iteraciones += 1
         else:
-            Yc.append(1)
-    return np.array(Yc)
+            print('Pesos final:', pesos)
+            print('Norma del error final:', norma_error)
+            diccionario_data = {
+                'LambdaID': id_lambda+1,
+                'Lambda': lambd,
+                'Iteraciones': contador_iteraciones+1,
+                'Norma': norma_error,
+                'Pesos': pesos
+            }
+            evaluaciones.append(diccionario_data)
+            print('Error aceptable')
+            break
+    print('===== FIN BUCLE DE ENTRENAMIENTO =====')
+    return evaluaciones
 
-def calculateError(E):
-    result = 0
-    for i in range(len(E)):
-        result = result + math.pow(E[i], 2)
-    return math.sqrt(result)
-
-def ReadFile():
-    f = open('data.txt', 'r')
-    data = f.read()
-    clean = data.rsplit("\n")
-    X = np.matrix(clean[0]) # create matrix X
-    y = clean[1].replace(";", ",")
-    b = []
-    for i in range(0, len(y), 2):
-        b.append(y[i])
-    Yaux = [int(e) for e in b]
-    Y = np.array(Yaux) # create array Y
-    f.close()
-    return X, Y
-
-def graphEvol(list):
-    epochs1 = []
-    epochs2 = []
-    epochs3 = []
-    eNorm1 = []
-    eNorm2 = []
-    eNorm3 = []
-    w1 = 0
-    w2 = 0
-    w3 = 0
-    lamb1 = 0
-    lamb2 = 0
-    lamb3 = 0
-    weights = []
-    for i in range(len(list)):
-        if list[i]['LambdaID'] == 1:
-            epochs1.append(list[i]['Epoch'])
-            eNorm1.append(list[i]['Enorm'])
-            lamb1 = list[i]['Lambda']
-            if np.any(list[i]['W']):
-                w1 = list[i]['W']
-        elif list[i]['LambdaID'] == 2:
-            epochs2.append(list[i]['Epoch'])
-            eNorm2.append(list[i]['Enorm'])
-            lamb2 = list[i]['Lambda']
-            if np.any(list[i]['W']):
-                w2 = list[i]['W']
-        else:
-            epochs3.append(list[i]['Epoch'])
-            eNorm3.append(list[i]['Enorm'])
-            lamb3 = list[i]['Lambda']
-            if np.any(list[i]['W']):
-                w3 = list[i]['W']
-    labels = ('Lambda', 'Pesos')
-    data1 = [[lamb1, w1]]
-    data2 = [[lamb2, w2]]
-    data3 = [[lamb3, w3]]
-    weights.append(data1)
-    weights.append(data2)
-    weights.append(data3)
-    plot.xlabel('Epocas')
-    plot.ylabel('Norma del error')
-    plot.title('Evolución del error')
-    plot.plot(epochs1, eNorm1, markerfacecolor='blue',
-             markersize=6, color='skyblue', linewidth=3, label='Lambda: '+str(lamb1))
-    plot.plot(epochs2, eNorm2, markerfacecolor='red',
-             markersize=6, color='red', linewidth=3, label='Lambda: '+str(lamb2))
-    plot.plot(epochs3, eNorm3, markerfacecolor='green',
-             markersize=6, color='green', linewidth=3, label='Lambda: '+str(lamb3))
-    table = plot.table(cellText=weights, colLabels=labels, loc='bottom')
-    table.set_fontsize(35)
-    plot.subplots_adjust(left=0.2, bottom=0.2)
-    plot.legend(bbox_to_anchor=(1, 1), loc='upper left', borderaxespad=0.)
-    plot.show()
-
-def printList(list):
-    for i in range(len(list)):
-        print(list[i])
-
-def start(entries):
-    epochs = []
-    evolNorm = []
-    evaluations = []
-    i = 0
-    X, Y = ReadFile()
-    eps = float(entries['Error permisible'].get())
-    print('X:\n', X)
-    print('Y: ', Y)
-    print('Error: ', eps)
-    dimensionsX = X.shape
-    print('dimensionsX: ', dimensionsX)
-    # adding bias
-    bias = [1 for i in range(dimensionsX[0])]
-    X = np.insert(X, 0, bias, axis=1)
-    dimensionsX = X.shape
-    print('dimensionsX: ', dimensionsX)
-    m = dimensionsX[0]
-    n = dimensionsX[1]
-    if n > 1 or m >= 2:
-        W = np.random.rand(n,1)
-        auxW = W
-        k = 0
-        for j in range(3):
-            W = auxW
-            lamb = random.uniform(0,1)
-            while True:
-                print('<----- Epoca #', i+1, ' || Lambda: ', lamb, ' ----->')
-                print('W:\n', W)
-                U = X.dot(W)
-                print('U:\n', U)
-                Yc = FAEscalon(U)
-                print('Yc:', Yc)
-                E = Yc - Y
-                print('E:', E)
-                EtX = np.dot(E.transpose(), X)
-                print('Et * X: ',EtX)
-                Ne = lamb * EtX
-                print('n * Et * X: ', Ne)
-                W = W.transpose() - Ne
-                print('new W: ',W)
-                enorm = calculateError(E)
-                print('ENorm:', enorm)
-                dictData = {'LambdaID': j+1, 'Epoch': i+1, 'Enorm': enorm, 'Lambda': lamb, 'W': 0}
-                evaluations.append(dictData)
-                if enorm > eps:
-                    W = W.transpose()
-                    print('Try again!')
-                    i += 1
-                else:
-                    k = i + k
-                    break
-            print('Finish')
-            evaluations[k]['W'] = W
-            i = 0
-        printList(evaluations)
-        graphEvol(evaluations)
+def iniciar(parametros):
+    evaluaciones = []
+    X, Y = Utils.leer_archivo()
+    error_ps = float(parametros['Error permisible'].get())
+    print(f"X {X.shape}:\n{X}")
+    print(f"Y {Y.shape}: {Y}")
+    print(f"Error: {error_ps}")
+    X = Utils.agregar_bias(X, X.shape)
+    print(f"X con bias ({X.shape}):\n{X}")
+    if X.shape[0] < 2 or X.shape[1] <= 1:
+        Graficos.mostrar_mensaje('Error', 'Parametros Incorrectos', 'Dimensiones incorrectas')
     else:
-        messagebox.showerror("Parametros incorrectos", "Dimensiones no correctas")
+        pesos_originales = random.rand(X.shape[1],1)
+        for iterador in range(3):
+            lambda_aleatoria = round(random.uniform(0,1),2)
+            evaluaciones = entrenar(X, Y, pesos_originales, iterador, lambda_aleatoria, error_ps, evaluaciones)
+        chart_data, data_table, pesos = preparar_datos(evaluaciones)
+        Graficos.crear_grafica_y_tabla(chart_data, data_table, pesos)
 
-def makeform(root, fields):
-    title = Label(root, text="Inicialización", width=20, font=("bold",20))
-    title.pack()
-    entries = {}
-    for field in fields:
-        row = Frame(root)
-        lab = Label(row, width=30, text=field+": ", anchor='w')
-        ent = Entry(row)
-        row.pack(side=TOP, fill=X, padx=5, pady=5)
-        lab.pack(side=LEFT)
-        ent.pack(side=RIGHT, expand=YES, fill=X)
-        entries[field] = ent
-    return entries
 
 if __name__ == '__main__':
-    root.title("Entrenamiento Neurona - UPCH IA")
-    root.geometry("300x250")
-    root.resizable(0,0)
-    ents = makeform(root, fields)
-    root.bind('<Return>', (lambda event, e=ents:fetch(e)))
-    b1 = Button(root, text = 'Iniciar',
-        command=(lambda e=ents: start(e)), bg="green",fg='white')
-    b1.pack(side = LEFT, padx = 5, pady = 5, expand = YES)
-    b2 = Button(root, text = 'Quit', command = root.quit, bg="red",fg='white')
-    b2.pack(side = LEFT, padx = 5, pady = 5, expand = YES)
-    root.mainloop()
+    """Funcion main para crear la ventana inicial.
+    """
+    ventana = Tk()
+    ventana.title("Entrenamiento Neurona - IA")
+    ventana.resizable(0,0)
+    entries = Graficos.crear_formulario(ventana)
+    b1 = Button(ventana, text='Iniciar',
+        command=(lambda parametros=entries: iniciar(parametros)), bg="green",fg='white')
+    b1.pack(side=LEFT, padx=5, pady=5, expand=YES)
+    b2 = Button(ventana, text='Quit', command=ventana.quit, bg="red",fg='white')
+    b2.pack(side=LEFT, padx = 5, pady=5, expand=YES)
+    ventana.mainloop()
